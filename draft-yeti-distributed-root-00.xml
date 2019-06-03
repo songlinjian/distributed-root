@@ -546,6 +546,7 @@
 
 
     <section title= "Security considerations">
+
       <t>TBD</t>
     </section>
 
@@ -557,6 +558,10 @@
 
    <section title="Acknowledgments">
 
+    <t>
+    Special thanks for NIC Chile's work on Distributed Threshold Cryptography 
+    which inspires this draft.
+    </t>
   </section> <!-- Acknowledgments -->
   </middle>
 

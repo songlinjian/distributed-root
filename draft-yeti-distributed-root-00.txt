@@ -572,6 +572,9 @@ Song                    Expires December 5, 2019               [Page 10]
 
 6.  Acknowledgments
 
+   Special thanks for NIC Chile's work on Distributed Threshold
+   Cryptography which inspires this draft.
+
 7.  References
 
    [DNSSEC-Root]
@@ -607,9 +610,6 @@ Song                    Expires December 5, 2019               [Page 10]
               "Yeti DNS Testbed", RFC 8483, DOI 10.17487/RFC8483,
               October 2018, <https://www.rfc-editor.org/info/rfc8483>.
 
-   [SAC067]   "Overview and History of the IANA Functions", August 2014,
-              <https://www.icann.org/en/system/files/files/
-              sac-067-en.pdf>.
 
 
 
@@ -617,6 +617,10 @@ Song                    Expires December 5, 2019               [Page 11]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
+
+   [SAC067]   "Overview and History of the IANA Functions", August 2014,
+              <https://www.icann.org/en/system/files/files/
+              sac-067-en.pdf>.
 
    [Threshold-Chile]
               Salgado, H., "Distributed Threshold cryptography: a novel
@@ -662,10 +666,6 @@ Appendix A.  Basic componets and operation of Threshold Signing
 
    KeyGen:   Given the key_pair (public key and secret key), the number
              of authorities (n) and the threshold (t), KeyGen operation
-             can generate a group of secret key shares (sks_group) by
-             performing KeyGen(key_pair, t, n) which outputs sks_group
-
-
 
 
 
@@ -673,6 +673,9 @@ Song                    Expires December 5, 2019               [Page 12]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
+
+             can generate a group of secret key shares (sks_group) by
+             performing KeyGen(key_pair, t, n) which outputs sks_group
 
    Sign:     For each secret key share (sks), it can be used to sign the
              message (msg) to generate a signature share (sigma) by
@@ -715,6 +718,18 @@ Appendix B.  Consensus algorithm
 
 Author's Address
 
+
+
+
+
+
+
+
+Song                    Expires December 5, 2019               [Page 13]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    Linjian Song
    Beijing Internet Institute
    2nd Floor, Building 5, No.58 Jing Hai Wu Lu, BDA
@@ -725,4 +740,45 @@ Author's Address
 
 
 
-Song                    Expires December 5, 2019               [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Song                    Expires December 5, 2019               [Page 14]
