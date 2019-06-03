@@ -392,6 +392,29 @@
       </section>
       <section title= "The Data Flow and Process">
 
+       <t>
+      In Figure 3, there is a chart of data flow and process as a routine 
+      for Yeti root zone update from one Yeti DM's point of view.
+    </t>
+
+    <t>Basically as an input each Yeti DM periodically pull the TLD data 
+      information (KSK, NS, glue) from each TLD authoritative servers. 
+      As a sequence there are 5 steps:0) Key Generation , 1) generate 
+      unsigned root zone, 2) Sign the zone with the key shares, 3) generate 
+      Signed Root zone with consensus among all Yeti DM, 4) Publish the 
+      signed Root zone file to Yeti root servers. 
+    </t>
+
+       <t>
+      Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act as 
+      an "One DM". That means in each step, each Yeti DM should broadcast 
+      the values or root zone, signature, Signed root zone to others until 
+      final consensus on that values are reached. In <xref target="Consensus"/>, 
+      there is a introduction of consensus algorithm which will help readers to
+      understand the basic property and interaction between Yeti DMs. Note that 
+      we will not dive into specific consensus algorithm in this draft. 
+    </t>
+
       <figure anchor="Data_flow_process" title="The Data Flow and Process">
         <artwork>
           <![CDATA[
@@ -431,28 +454,7 @@
 ]]>
         </artwork>
       </figure>
-    <t>
-      In Figure 3, there is a chart of data flow and process as a routine 
-      for Yeti root zone update from one Yeti DM's point of view.
-    </t>
 
-    <t>Basically as an input each Yeti DM periodically pull the TLD data 
-      information (KSK, NS, glue) from each TLD authoritative servers. 
-      As a sequence there are 5 steps:0) Key Generation , 1) generate 
-      unsigned root zone, 2) Sign the zone with the key shares, 3) generate 
-      Signed Root zone with consensus among all Yeti DM, 4) Publish the 
-      signed Root zone file to Yeti root servers. 
-    </t>
-
-       <t>
-      Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act as 
-      an "One DM". That means in each step, each Yeti DM should broadcast 
-      the values or root zone, signature, Signed root zone to others until 
-      final consensus on that values are reached. In <xref target="Consensus"/>, 
-      there is a introduction of consensus algorithm which will help readers to
-      understand the basic property and interaction between Yeti DMs. Note that 
-      we will not dive into specific consensus algorithm in this draft. 
-    </t>
     
     <t>In the following subsections each step will be discuss briefly. They focus 
       on "what to do" other than "how to do". More detailed how-to-do specification 

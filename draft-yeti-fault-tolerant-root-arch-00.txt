@@ -31,16 +31,16 @@ Table of Contents
      3.1.  Hypotheses and Goal . . . . . . . . . . . . . . . . . . .   5
      3.2.  Roles and Responsibilities  . . . . . . . . . . . . . . .   6
      3.3.  The Data Flow and Process . . . . . . . . . . . . . . . .   7
-       3.3.1.  Step 0: Key Generation  . . . . . . . . . . . . . . .   9
+       3.3.1.  Step 0: Key Generation  . . . . . . . . . . . . . . .   8
        3.3.2.  Step 1: Generate unsigned Root zone . . . . . . . . .   9
-       3.3.3.  Step 2: Threshold Signing and and Aggregation . . . .  10
+       3.3.3.  Step 2: Threshold Signing and and Aggregation . . . .   9
        3.3.4.  Step 3: Generate Signed Root zone . . . . . . . . . .  10
        3.3.5.  Step 4: Publish the Signed Root zone  . . . . . . . .  10
-   4.  Security considerations . . . . . . . . . . . . . . . . . . .  11
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
-   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
-   Appendix A.  Basic componets and operation of Threshold Signing .  12
+   4.  Security considerations . . . . . . . . . . . . . . . . . . .  10
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+   Appendix A.  Basic componets and operation of Threshold Signing .  11
    Appendix B.  Consensus algorithm  . . . . . . . . . . . . . . . .  13
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
 
@@ -354,24 +354,24 @@ Song                    Expires December 5, 2019                [Page 6]
 
 3.3.  The Data Flow and Process
 
+   In Figure 3, there is a chart of data flow and process as a routine
+   for Yeti root zone update from one Yeti DM's point of view.
 
+   Basically as an input each Yeti DM periodically pull the TLD data
+   information (KSK, NS, glue) from each TLD authoritative servers.  As
+   a sequence there are 5 steps:0) Key Generation , 1) generate unsigned
+   root zone, 2) Sign the zone with the key shares, 3) generate Signed
+   Root zone with consensus among all Yeti DM, 4) Publish the signed
+   Root zone file to Yeti root servers.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act
+   as an "One DM".  That means in each step, each Yeti DM should
+   broadcast the values or root zone, signature, Signed root zone to
+   others until final consensus on that values are reached.  In
+   Appendix B, there is a introduction of consensus algorithm which will
+   help readers to understand the basic property and interaction between
+   Yeti DMs.  Note that we will not dive into specific consensus
+   algorithm in this draft.
 
 
 
@@ -431,34 +431,6 @@ Song                    Expires December 5, 2019                [Page 7]
 
                     Figure 3: The Data Flow and Process
 
-   In Figure 3, there is a chart of data flow and process as a routine
-   for Yeti root zone update from one Yeti DM's point of view.
-
-   Basically as an input each Yeti DM periodically pull the TLD data
-   information (KSK, NS, glue) from each TLD authoritative servers.  As
-   a sequence there are 5 steps:0) Key Generation , 1) generate unsigned
-   root zone, 2) Sign the zone with the key shares, 3) generate Signed
-   Root zone with consensus among all Yeti DM, 4) Publish the signed
-   Root zone file to Yeti root servers.
-
-
-
-
-
-Song                    Expires December 5, 2019                [Page 8]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
-   Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act
-   as an "One DM".  That means in each step, each Yeti DM should
-   broadcast the values or root zone, signature, Signed root zone to
-   others until final consensus on that values are reached.  In
-   Appendix B, there is a introduction of consensus algorithm which will
-   help readers to understand the basic property and interaction between
-   Yeti DMs.  Note that we will not dive into specific consensus
-   algorithm in this draft.
-
    In the following subsections each step will be discuss briefly.  They
    focus on "what to do" other than "how to do".  More detailed how-to-
    do specification is to be defined in next version or in other
@@ -470,6 +442,14 @@ Song                    Expires December 5, 2019                [Page 8]
    beginning of Yeti Root system setup.  It can be a centralized process
    with a group of people and broadcast globally via a auditable process
    like a IANA KSK ceremony
+
+
+
+Song                    Expires December 5, 2019                [Page 8]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    (https://www.icann.org/en/system/files/files/presentation-root-ksk-
    protection-key-ceremonies-13may17-en.pdf)
 
@@ -498,14 +478,6 @@ Song                    Expires December 5, 2019                [Page 8]
    TLD data includes DS record, NS RRset and glue of a particular TLD.
    Periodically TLD data is pulled from authority servers of each TLD.
    The authority list of TLD is from IANA website
-
-
-
-Song                    Expires December 5, 2019                [Page 9]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    (www.iana.org/domains/root/db).  Note that DS record of each TLD can
    be generated using their KSK information.  More specifically
 
@@ -524,6 +496,15 @@ Song                    Expires December 5, 2019                [Page 9]
    will be broadcast via Yeti DM consensus network.  Finally each Yeti
    DM will connect all RRSIG records signed by all Yeti DMs which is
    confirmed via the consensus network.
+
+
+
+
+
+Song                    Expires December 5, 2019                [Page 9]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
 
    With all RRSIG records, Yeti DM can aggregate them into one RRSIG
    record using Aggregation function.  In Threshold Signing scheme, if
@@ -550,18 +531,6 @@ Song                    Expires December 5, 2019                [Page 9]
    to reduce the notify storm.  For example, one DM only notify 5 root
    servers and 3 DM are configure in each root server's ACL.
 
-
-
-
-
-
-
-
-Song                    Expires December 5, 2019               [Page 10]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
 4.  Security considerations
 
    TBD
@@ -582,6 +551,16 @@ Song                    Expires December 5, 2019               [Page 10]
               2010, <http://www.root-dnssec.org/wp-
               content/uploads/2010/06/
               draft-icann-dnssec-arch-v1dot4.pdf>.
+
+
+
+
+
+
+Song                    Expires December 5, 2019               [Page 10]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
 
    [FDMA]     SONG, L., "Fault-tolerant Distribution Master
               Architecture", August 2018, <https://yeti-
@@ -610,14 +589,6 @@ Song                    Expires December 5, 2019               [Page 10]
               "Yeti DNS Testbed", RFC 8483, DOI 10.17487/RFC8483,
               October 2018, <https://www.rfc-editor.org/info/rfc8483>.
 
-
-
-
-Song                    Expires December 5, 2019               [Page 11]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    [SAC067]   "Overview and History of the IANA Functions", August 2014,
               <https://www.icann.org/en/system/files/files/
               sac-067-en.pdf>.
@@ -639,6 +610,14 @@ Appendix A.  Basic componets and operation of Threshold Signing
 
    o  The first component is a key generation process with secret
       sharing scheme which generates multiple secret key shares from the
+
+
+
+Song                    Expires December 5, 2019               [Page 11]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
       secret key.  Secret sharing system is also called a (t,n)-
       threshold scheme due to the property that a number (number >= t)
       of secret shares can reconstruct the secret to be used to sign.
@@ -666,14 +645,6 @@ Appendix A.  Basic componets and operation of Threshold Signing
 
    KeyGen:   Given the key_pair (public key and secret key), the number
              of authorities (n) and the threshold (t), KeyGen operation
-
-
-
-Song                    Expires December 5, 2019               [Page 12]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
              can generate a group of secret key shares (sks_group) by
              performing KeyGen(key_pair, t, n) which outputs sks_group
 
@@ -694,6 +665,14 @@ Song                    Expires December 5, 2019               [Page 12]
              than (n-t+1) keys was compromised, the system will not be
              taken down.  (To Be Confirmed and doble checked with crypto
              scholar)
+
+
+
+
+Song                    Expires December 5, 2019               [Page 12]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
 
    Verify:   The Verify operation is the same as other signing and
              validating process, by perform Verify(PK, msg,
@@ -717,18 +696,6 @@ Appendix B.  Consensus algorithm
    TBD
 
 Author's Address
-
-
-
-
-
-
-
-
-Song                    Expires December 5, 2019               [Page 13]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
 
    Linjian Song
    Beijing Internet Institute
@@ -758,27 +725,4 @@ Song                    Expires December 5, 2019               [Page 13]
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Song                    Expires December 5, 2019               [Page 14]
+Song                    Expires December 5, 2019               [Page 13]
