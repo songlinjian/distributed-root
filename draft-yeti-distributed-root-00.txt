@@ -1,0 +1,728 @@
+
+
+
+
+                                                                 L. Song
+                                              Beijing Internet Institute
+                                                            June 3, 2019
+
+
+         Fault-tolerant Root High Level Technical Architecture
+                 draft-yeti-fault-tolerent-root-arch-00
+
+Abstract
+
+   This document describes the proposed architecture of Fault-tolerant
+   Root for Yeti DNS.  It results from ongoing discussions during the
+   launch of phase-2 for Yeti DNS Project towards a decentralized Root
+   system.  This design intends to introduce the property of Fault-
+   tolerance with redundancy and decentralized technology into the
+   signing and publication function of Root.  Note that it is only high-
+   level description of the design.  Details are to be contained in
+   accompanying documentation.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   1
+   2.  Background and Motivation . . . . . . . . . . . . . . . . . .   2
+     2.1.  Breif Review of IANA Root . . . . . . . . . . . . . . . .   2
+     2.2.  Previous Proposals and discussions  . . . . . . . . . . .   4
+   3.  Framework of Fault-tolerant Root  . . . . . . . . . . . . . .   5
+     3.1.  Hypotheses and Goal . . . . . . . . . . . . . . . . . . .   5
+     3.2.  Roles and Responsibilities  . . . . . . . . . . . . . . .   6
+     3.3.  The Data Flow and Process . . . . . . . . . . . . . . . .   7
+       3.3.1.  Step 0: Key Generation  . . . . . . . . . . . . . . .   9
+       3.3.2.  Step 1: Generate unsigned Root zone . . . . . . . . .   9
+       3.3.3.  Step 2: Threshold Signing and and Aggregation . . . .  10
+       3.3.4.  Step 3: Generate Signed Root zone . . . . . . . . . .  10
+       3.3.5.  Step 4: Publish the Signed Root zone  . . . . . . . .  10
+   4.  Security considerations . . . . . . . . . . . . . . . . . . .  11
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Appendix A.  Basic componets and operation of Threshold Signing .  12
+   Appendix B.  Consensus algorithm  . . . . . . . . . . . . . . . .  13
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
+
+1.  Introduction
+
+   The Internet's Domain Name System(DNS) is a vital component of
+   Internet infrastructure mapping human-readable names into Internet
+   Protocol (IP) addresses.  DNS is designed and built on a single root,
+
+
+
+
+Song                    Expires December 5, 2019                [Page 1]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   known as the Root Server System with editorial function, signing
+   function and publication Function of Root zone.
+
+   As part of IANA function, DNS Root zone management has a long
+   history[SAC067] and experienced technical changes (IPv6, DNSSEC,
+   Anycast etc) as well as policy changes (IANA transition, new gTLD).
+   None of previous changes violates the assumption that a centralized
+   entity responsible for one particular function in the Root zone
+   management.  For example, IANA takes the role of editorial and Key
+   Signing functions.  VeriSign takes the role of Zone signing and
+   publication function which distributes the root zone to 13 root
+   servers and their instances.  This centralized design fits the need
+   to keep a single, globally Unique DNS Root [RFC2826]
+
+   Recent years as the rise of DNS privacy [RFC7626], high resiliency
+   and Internet policy concerns on Internet infrastructure, thoughts of
+   introducing fault-tolerance and decentralization technology into DNS
+   are getting popular.  Some people suggest that "if we were designing
+   a next-generation DNS using today's technology, it should be possible
+   to remove the technical requirement for a central authority over the
+   root" [RFC8324].  Yeti DNS Testbed [RFC8483] proposed and built a
+   model introducing three ZSK signers and root zone distributors.
+   Yeti's model shows a form of root "democracy" governance but it is
+   not fault-tolerant and scalable enough technically speaking [FDMA].
+   It gives us motivation to upgrade Yeti Root to "higher" level by
+   introducing the properties of decentralization and fault-tolerance.
+
+   This document describes the proposed architecture of Fault-tolerant
+   Root for Yeti DNS.  It results from ongoing discussions during the
+   launch of phase-2 for Yeti DNS Project towards a decentralized Root
+   system.  It firstly reviews the state of art including how IANA and
+   Yeti Root works, as well as some previous proposals in this field.
+   It proposes to introduce Threshold Signing cryptographic technology
+   to bring redundancy for Yeti Root DNSSEC.  It also introduces a layer
+   of DM network with consensus algorithm to keep the consistency of
+   Root zone and meta data.
+
+   Note that it is only high-level description of the design.  Details
+   of some modules are to be contained in accompanying documentation.
+
+2.  Background and Motivation
+
+2.1.  Breif Review of IANA Root
+
+   According to [SAC067] , the components of IANA Root involves four
+   independent parties after IANA Transition: 1) the change requester,
+   usually the manager(s) or administrator(s) of the TLD; 2) ICANN/PTI,
+   as the IANA Functions Operator;3) VeriSign, as the Root Zone
+
+
+
+Song                    Expires December 5, 2019                [Page 2]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   Maintainer(RZM); and 4) the Root Server Operators.  Their
+   relationship and data flow among them are shown in figure 1 below.
+
+
+                    +----------------+
+                    |  TLD operators |
+                    +-----+----+-----+
+                          |    |
+               DS records |    |Change requests
+                          v    v
+                    +-----+----+-----+
+                    |  IANA operator |
+                    +-----+----+-----+
+                          ^    |
+               Key Signing|    | updated Root zone
+                          v    v
+                    +-----+----+-----+
+                    |   Root Zone    |
+                    | Maintainer(RZM)|
+                    +-------+--------+
+                            |
+                            | Notify and zone transfer
+                            v
+                   +-+ +-+ +++       +-+
+                   |A| |B| |C| + + + |M|
+                   +-+ +-+ +-+       +-+
+
+
+             Figure 1: Root zone update process and data flow
+
+   There are two important roles in the figure: IANA operator and Root
+   zone maintainer(RZM).  They are the centralized roles in the whole
+   process regarding root zone editorial, signing and publication
+   functions.
+
+   ICANN/PTI as the IANA operator is the interface to TLD operators and
+   is responsible to collect root zone change requests and to vet and
+   process DS records sent from TLD operator.  ICANN/PTI is also
+   responsible for management of root zone KSK, including generation,
+   publication, and use for signing in cooperation with the Internet
+   community according to [DNSSEC-Root].
+
+   VeriSign as the Root zone Maintainer(RZM) is responsible for
+   incorporating DNSSEC-related changes into the root zone file, signing
+   the file with the ZSK, and distribute the signed root zone file to
+   the root servers.  It is also referred as to Distribution Master
+   (DM).  RZM and DM are both used in following sessions as the role of
+
+
+
+
+Song                    Expires December 5, 2019                [Page 3]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   signing and publishing root zone.  Note that there is an exchange of
+   ZSK and Signed DNSKEY set between IANA operator and RZM.
+
+   In Yeti Root, the role of VeriSign is replaced by three DMs who pull
+   the unsigned zone from IANA, sign it with their ZSK and distribute
+   the root zone among 25 root server independently.  This approach
+   introduces certain redundancy using current DNS technology.
+
+2.2.  Previous Proposals and discussions
+
+   When it refers to decentralization technology, Blockchain comes to
+   people's mind which is a buzzle word recent years.  Based on
+   Blockchain, there are some naming service systems like ENS
+   (https://ens.domains/ ) in Ethereum network and Namecoin
+   (https://namecoin.org/) in Bitcoin netowrk.  They introduce .eth and
+   .bit respectively as special TLDs used only in their overlay network
+   as well as special registration and resolution protocols.  They are
+   not DNS, but referred to as Blockchain-based DNS in literatures
+   though.
+
+   In Yeti DNS Project, from the beginning, we keep boundaries for One
+   Unique Internet Identifier and not amending the IANA name space.
+   However, the Blockchain-based DNS does not fit DNS in operation
+   network.  They have different name space and use different resolving
+   protocols.  As introduced in Figure 1, the Root system is decoupled
+   into three functions: editing, signing and publication.  It is
+   possible to keep the root zone intact and make changes to signing and
+   publication functions to meet our requirement.
+
+   There are some approaches introduce alternative method to access the
+   unique name space.  Loopback Root [RFC8483]is one alternative root
+   zone publication approach in which the signed root zone is replicated
+   in resolver.  Changes are made only in publication function.
+
+   Yeti DNS [RFC8483] is one example made changes in both signing and
+   publication functions.  Yeti root zone is signed by three DMs and
+   distributed the root zone to a different set of root servers.  Yeti
+   Multi-DM model makes change to signing function (Zone Signing), but
+   current version of Multi-DM does not scale due to increased DNS
+   response by introducing multiple ZSKs.
+
+   On Root signing function, John Ihren and Bill manning [draft-ihren-
+   dnsext-threshold-validation] once proposed a mechanism called
+   threshold validation to improved trust and redundancy for DNSSEC
+   Keys.  Basically it require resolvers to validate multiple signatures
+   signed by multiple trust entities.  If the number of successful
+   validation reaches a threshold, then the outcome of multiple
+   validations as a whole is VALID.  Similar with Yeti model, it does
+
+
+
+Song                    Expires December 5, 2019                [Page 4]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   not scale given the limitation of DNS packet size (contain multiple
+   KEY and signature).  It also require changes on every validating
+   resolver which make it a task impossible.
+
+   Is it possible to introduce multiple independent Signers without
+   changing the DNSSEC validation interface, and without augmenting the
+   size of DNS response as well?  The work of NIC Chile on "Distributed
+   Threshold Cryptography"[Threshold-Chile] gives a clue which was
+   introduced in 2019 Yeti workshop in Tokyo.  With Threshold
+   Cryptography scheme, it is possible to aggregate all types of
+   primitives (secret keys, public keys, signatures) and the result is
+   always another valid primitive to fit the interface of PKCS#11
+   [PKCS11].  However, there is still a centralized roll called SD
+   (Signing Dealer) in charge of distributing zone file, collecting and
+   aggregating the signatures for each update of root zone.
+
+3.  Framework of Fault-tolerant Root
+
+3.1.  Hypotheses and Goal
+
+   To design a distributed system which does not rely upon one entity,
+   there should be some hypotheses of the participants to limit the
+   scope of risk.  There is one notable assumption that all participants
+   of the fault-tolerant root designed in this draft are cooperative and
+   with no malicious intention.  It means that the system is design
+   against technical failures like data inconsistency, single point of
+   failure, etc.  It can be achieved by adopting a selective and
+   invitation-based strategy to choose a group of participants with
+   credit.  It is similar to the concept of permission chain in
+   Blockchain context.
+
+   Based on the related work and the hypotheses, the goal and technical
+   requirement of desirable fault-tolerant root is listed as follows:
+
+   o  To introduce redundancy and fault-tolerance property on both
+      signing and publication functions in case of single point failure.
+
+   o  To provide consistency check on to-be published root zone in case
+      of date inconsistency in a distributed manner.
+
+   o  New proposed scheme SHOULD be deployed on authority server only
+      which means no change is required on recursive server.  Chile
+      NIC's proposal as a kind of PKCS#11 provider is a good starting
+      pint.
+
+   o  New proposed scheme SHOULD not be introducing huge increase (>1200
+      octets) on the size of DNS response.
+
+
+
+
+Song                    Expires December 5, 2019                [Page 5]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+3.2.  Roles and Responsibilities
+
+
+          +---------------+    +---------------+
+          | KeyGen Dealer |    | TLD Operators |
+          +---------------+    +---------------+
+                  |                    | TLD Zone Changes
+                  |Key Share           | (NS, KSK, glue)
+                  |                    |
+      +-----------v----------------- --v------------+
+      |                                             |
+      |     +--------+      +--------+              |
+      |     |Yeti DM1|      |Yeti DM2|      + + +   |
+      |     +--------+      +--------+              |
+      |         |                |                  |
+      |   +-------------------------------------+   |
+      |               |                  |          |
+      |           +--------+         +--------+     |
+      |           |Yeti DM3|         |Yeti DM4|     |
+      |           +--------+         +--------+     |
+      |                                             |
+      | Yeti DM network                             |
+      +---------------------------------------------+
+                             |
+                             | Root Zone Publication
+                             v
+       +-+   +-+   +-+   +-+   +-+   +-+         +--+
+       |1|   |2|   |3|   |4|   |5|   |6|  + + +  |25|
+       +-+   +-+   +-+   +-+   +-+   +-+         +--+
+
+
+
+              Figure 2: The framework in Fault-tolerant Root
+
+   The framework in fault-tolerant root is shown in Figure 2.  There are
+   several roles are similar to ones in Figure 1 like TLD Operators and
+   Root servers.  The difference in the interaction with TLD Operators
+   is that in figure 1 TLD operators can push zone change request and DS
+   to ICANN/PTI.  But in Yeti, it is to pull the data and generate DS
+   record locally.  From the TLD data point of view, they are mostly
+   identical except some NS records are present in TLD zone but not in
+   root zone.
+
+   Different from a single RZM in IANA root, there is a group of Yeti DM
+   (>= 3) who are fully connected as a cluster and form a Yeti DM
+   network.  The Yeti DM network take the role of signing and publishing
+   Root zone acting as one DM with the assistance of two key components
+   : threshold signing and consensus algorithm.  It is a desirable
+
+
+
+Song                    Expires December 5, 2019                [Page 6]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   capability that failure on small parts of Yeti DM network (a
+   threshold number of DMs) will not be able to take down the whole
+   system.  Note that the numbers of DM and threshold are testing
+   targets helping us to understand the limit of the system.
+
+   There is a special role in Figure 2 is the KeyGen Dealer who is
+   responsible to generate the keys (or key shares) to each yeti DM.
+   Special secret sharing algorithm is used to generate keys with
+   property of threshold.  In Appendix A, there is a introduction of
+   threshold signing which will help readers to understand the basic
+   primitives and process.  Note that this document does not dive into
+   specific threshold signing algorithm and protocol.  Instead related
+   data flow and function interface will be introduced.
+
+3.3.  The Data Flow and Process
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Song                    Expires December 5, 2019                [Page 7]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+                             +
+                             |  Root Zone
+                             |  Information
+                             |
+                +------------|-------------+
+                |   Yeti DM  |             |
+                |  +---------v----------+  |
+                |  |1.Generate unsigned |  |
+                |  |  Root zone         |<--------------+
+                |  +---------+----------+  |            |
+                |            |             |     +------v----+
+  +------+      |  +---------v----------+  |     |           |
+  |Dealer|+-----> +2.Threshold Signing  |<------>|           |
+  +------+      |  |   and Aggregation  |  |     | Yeti DM   |
+       0.KeyGen |  +---------+----------+  |     | Consensus |
+                |            |             |     | Network  <----->
+                |  +---------v----------+  |     |           |with other
+                |  |3.Generate Signed   |<------>|           |Yeti DM
+                |  |  Root zone file    |  |     |           |
+                |  +---------+----------+  |     +-----------+
+                |            |             |
+                |  +---------v----------+  |
+                |  |4.Publish the signed|  |
+                |  |  Root zone file    |  |
+                |  +---------+----------+  |
+                +------------+-------------+
+                             |
+                             | Notify and zone transfer
+                             v
+                    +-+ +-+ +++       +--+
+                    |1| |2| |3| + + + |25|
+                    +-+ +-+ +-+       +--+
+
+
+
+                    Figure 3: The Data Flow and Process
+
+   In Figure 3, there is a chart of data flow and process as a routine
+   for Yeti root zone update from one Yeti DM's point of view.
+
+   Basically as an input each Yeti DM periodically pull the TLD data
+   information (KSK, NS, glue) from each TLD authoritative servers.  As
+   a sequence there are 5 steps:0) Key Generation , 1) generate unsigned
+   root zone, 2) Sign the zone with the key shares, 3) generate Signed
+   Root zone with consensus among all Yeti DM, 4) Publish the signed
+   Root zone file to Yeti root servers.
+
+
+
+
+
+Song                    Expires December 5, 2019                [Page 8]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act
+   as an "One DM".  That means in each step, each Yeti DM should
+   broadcast the values or root zone, signature, Signed root zone to
+   others until final consensus on that values are reached.  In
+   Appendix B, there is a introduction of consensus algorithm which will
+   help readers to understand the basic property and interaction between
+   Yeti DMs.  Note that we will not dive into specific consensus
+   algorithm in this draft.
+
+   In the following subsections each step will be discuss briefly.  They
+   focus on "what to do" other than "how to do".  More detailed how-to-
+   do specification is to be defined in next version or in other
+   documentation.
+
+3.3.1.  Step 0: Key Generation
+
+   A Key Generation process (KeyGen for short) is required in the
+   beginning of Yeti Root system setup.  It can be a centralized process
+   with a group of people and broadcast globally via a auditable process
+   like a IANA KSK ceremony
+   (https://www.icann.org/en/system/files/files/presentation-root-ksk-
+   protection-key-ceremonies-13may17-en.pdf)
+
+   In the context Fault-tolerant Root, The KeyGen process has at least
+   two outcomes: 1) KSK shares for each Yeti DM, 2) ZSK shares for each
+   Yeti DM.  Different from IANA Key Ceremony, Key Signing process is
+   done by each Yeti DM independently.  Secret KSK and ZSK is no need to
+   be maintained and kept safe in a special device because they are not
+   required in the following process.  They can be destroyed after
+   KeyGen is done or kept for emergency purpose.
+
+   Note that the KeyGen dealer in figure 2 and 3 is more light-weighted
+   than the Signing Dealer in NIC Chile's proposal, but it is still a
+   centralized role involving human activities in the system.  It is
+   technical possible to further remove the KeyGen dealer role by
+   deploying a certain Distributed Key Generation (DKG) method
+   (https://en.wikipedia.org/wiki/Distributed_key_generation).
+
+3.3.2.  Step 1: Generate unsigned Root zone
+
+   According to RFC8483, the Yeti unsigned root zone is composed of two
+   part : APEX records of Root and the TLD data.  APEX data can be
+   specified in the beginning.  (To Be Defined for SOA, NS and DNSKEY
+   respectively)
+
+   TLD data includes DS record, NS RRset and glue of a particular TLD.
+   Periodically TLD data is pulled from authority servers of each TLD.
+   The authority list of TLD is from IANA website
+
+
+
+Song                    Expires December 5, 2019                [Page 9]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   (www.iana.org/domains/root/db).  Note that DS record of each TLD can
+   be generated using their KSK information.  More specifically
+
+   It is worth mentioning that Each Yeti DM will pull the data
+   independently and save them as a <key,value> pair.  More specifically
+   the <name, type, class> is the key, and <TTL, RRset> is the value.
+   Each one of the values are considered as to-be-confirm state until
+   all Yeti DMs agree on the values via the consensus network running
+   consensus protocol.  If every Yeti DM follows the same procedure as a
+   protocol, the confirmed unsigned root zone will be formed finally.
+
+3.3.3.  Step 2: Threshold Signing and and Aggregation
+
+   Each Yeti DM will use the key share to sign the zone delivering RRSIG
+   for each RRset.  The RRSIG of each RRset per Yeti DM (with DM ID)
+   will be broadcast via Yeti DM consensus network.  Finally each Yeti
+   DM will connect all RRSIG records signed by all Yeti DMs which is
+   confirmed via the consensus network.
+
+   With all RRSIG records, Yeti DM can aggregate them into one RRSIG
+   record using Aggregation function.  In Threshold Signing scheme, if
+   the number of failures of DM signing is less than threshold t, the
+   system will survive by aggregating a signature which will output
+   VAILD validated against the Public Key.
+
+3.3.4.  Step 3: Generate Signed Root zone
+
+   For each RRset, a aggregated RRSIG is generated locally by each Yeti
+   DM.  All aggregated RRSIGs are to be confirmed via consensus network.
+   After confirmation, A Signed Root zone will be generated without
+   inconsistency.
+
+3.3.5.  Step 4: Publish the Signed Root zone
+
+   Yeti DM will send notify to all root servers.  Root server will
+   configure its Zone transfer ACl with invited Yeti DM.  It is possible
+   that a root server receive more than on notify in a short period.
+   Only the first notify carrying the new serial of SOA will trigger the
+   zone transfer request.
+
+   It is possible to configure a smaller mapping of DMs and Root servers
+   to reduce the notify storm.  For example, one DM only notify 5 root
+   servers and 3 DM are configure in each root server's ACL.
+
+
+
+
+
+
+
+
+Song                    Expires December 5, 2019               [Page 10]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+4.  Security considerations
+
+   TBD
+
+5.  IANA Considerations
+
+   No IANA considerations for this memo
+
+6.  Acknowledgments
+
+7.  References
+
+   [DNSSEC-Root]
+              "DNSSEC Root Zone High Level Technical Architecture", June
+              2010, <http://www.root-dnssec.org/wp-
+              content/uploads/2010/06/
+              draft-icann-dnssec-arch-v1dot4.pdf>.
+
+   [FDMA]     SONG, L., "Fault-tolerant Distribution Master
+              Architecture", August 2018, <https://yeti-
+              dns.org/yeti/blog/2018/08/13/
+              fault-tolerant-distribution-master-architecture.html>.
+
+   [I-D.boneh-bls-signature]
+              Boneh, D., Gorbunov, S., Wee, H., and Z. Zhang, "BLS
+              Signature Scheme", draft-boneh-bls-signature-00 (work in
+              progress), February 2019.
+
+   [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
+              Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
+              2000, <https://www.rfc-editor.org/info/rfc2826>.
+
+   [RFC7626]  Bortzmeyer, S., "DNS Privacy Considerations", RFC 7626,
+              DOI 10.17487/RFC7626, August 2015,
+              <https://www.rfc-editor.org/info/rfc7626>.
+
+   [RFC8324]  Klensin, J., "DNS Privacy, Authorization, Special Uses,
+              Encoding, Characters, Matching, and Root Structure: Time
+              for Another Look?", RFC 8324, DOI 10.17487/RFC8324,
+              February 2018, <https://www.rfc-editor.org/info/rfc8324>.
+
+   [RFC8483]  Song, L., Ed., Liu, D., Vixie, P., Kato, A., and S. Kerr,
+              "Yeti DNS Testbed", RFC 8483, DOI 10.17487/RFC8483,
+              October 2018, <https://www.rfc-editor.org/info/rfc8483>.
+
+   [SAC067]   "Overview and History of the IANA Functions", August 2014,
+              <https://www.icann.org/en/system/files/files/
+              sac-067-en.pdf>.
+
+
+
+Song                    Expires December 5, 2019               [Page 11]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   [Threshold-Chile]
+              Salgado, H., "Distributed Threshold cryptography: a novel
+              way to distribute keys and signing for DNSSEC", March
+              2019, <http://yeti-dns.org/resource/2019-3-2/
+              threshold-crypto-4-root-hsalgado.pdf>.
+
+Appendix A.  Basic componets and operation of Threshold Signing
+
+   Before introducing new design of Yeti Root, it is necessary to
+   briefly introduce the property of Threshold Signing with basic
+   primitives and operation which is the key components of the fault-
+   tolerant root.
+
+   Generally speaking, threshold signing require two crypto components:
+
+   o  The first component is a key generation process with secret
+      sharing scheme which generates multiple secret key shares from the
+      secret key.  Secret sharing system is also called a (t,n)-
+      threshold scheme due to the property that a number (number >= t)
+      of secret shares can reconstruct the secret to be used to sign.
+      However, secret sharing scheme itself require a dealer to recover
+      the original secret key which is also possible to be stolen and
+      compromised during that period.  To avoid the risk, a special
+      signature scheme is need as the second component.
+
+   o  A signature scheme with the property of primitives aggregation is
+      the second key component.  With that signature scheme all types of
+      primitives like secret keys, public keys, signatures can be
+      aggregated, and the result is always another valid primitive.  The
+      secret key shares generated in the first component are also valid
+      secret keys which can be used to sign a message and thus create a
+      valid signature.  The dealer or anyone can take t-of-n of these
+      signature shares to recover a new signature which is identical to
+      what would have been created if the original secret key would have
+      been used.  So the secret key would never appear or be observed
+      after key generate process.  (BLS Signature Scheme
+      [I-D.boneh-bls-signature] is one example of aggregatable signature
+      scheme)
+
+   Based on the components of threshold signing, there are several
+   operations provided to fulfill the threshold signing process
+
+   KeyGen:   Given the key_pair (public key and secret key), the number
+             of authorities (n) and the threshold (t), KeyGen operation
+             can generate a group of secret key shares (sks_group) by
+             performing KeyGen(key_pair, t, n) which outputs sks_group
+
+
+
+
+
+Song                    Expires December 5, 2019               [Page 12]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+   Sign:     For each secret key share (sks), it can be used to sign the
+             message (msg) to generate a signature share (sigma) by
+             performing Sign(sk, msg) which outputs sigma.  Note that a
+             group of secret key share (sks_group) can generate a group
+             of signatures share (sigma_group)
+
+   Aggregate_sigma:  Given any t out of n signatures share signed by
+             secret key shares, an aggregated signature can be generated
+             by performing Aggregate_sigma(sigma_1, ... sigma_t) which
+             output VALID and sigma_aggregated.  However if
+             Aggregate_sigma failed and outputs not aggregated
+             signature, it means there is not enough (less then t) valid
+             signature shares are collected.  This operation is a key
+             design introducing (n-t) redundancy which means if no more
+             than (n-t+1) keys was compromised, the system will not be
+             taken down.  (To Be Confirmed and doble checked with crypto
+             scholar)
+
+   Verify:   The Verify operation is the same as other signing and
+             validating process, by perform Verify(PK, msg,
+             sigma_aggregated) outputs VALID if not error here.
+
+   Note that there is a still a centralized dealer to generate key and
+   key shares and distributed to n players but just in the beginning.
+   The threshold signing described above require not dealer in each
+   update of msg.  In the context of root, after key generation process
+   (like a Key ceremony), all process of root zone signing and
+   publication can be done in a distributed and automatic manner.
+
+Appendix B.  Consensus algorithm
+
+   It is quoted that consensus is a fundamental problem in fault-
+   tolerant distributed systems.  Consensus involves multiple servers
+   agreeing on values.  Once they reach a decision on a value, that
+   decision is final.  In this section, there is a brief introduction of
+   Raft consensus algorithm (https://raft.github.io/) as a background.
+
+   TBD
+
+Author's Address
+
+   Linjian Song
+   Beijing Internet Institute
+   2nd Floor, Building 5, No.58 Jing Hai Wu Lu, BDA
+   Beijing  100176
+   P. R. China
+
+   Email: songlinjian@gmail.com
+
+
+
+Song                    Expires December 5, 2019               [Page 13]
