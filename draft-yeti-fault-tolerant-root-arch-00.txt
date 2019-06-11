@@ -4,7 +4,7 @@
 
 Yeti Design Team                                                 L. Song
                                               Beijing Internet Institute
-                                                            June 3, 2019
+                                                           June 11, 2019
 
 
          Fault-tolerant Root High Level Technical Architecture
@@ -25,7 +25,7 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   1
    2.  Background and Motivation . . . . . . . . . . . . . . . . . .   2
-     2.1.  Breif Review of IANA Root . . . . . . . . . . . . . . . .   2
+     2.1.  Brief Review of IANA Root . . . . . . . . . . . . . . . .   2
      2.2.  Previous Proposals and discussions  . . . . . . . . . . .   4
    3.  Framework of Fault-tolerant Root  . . . . . . . . . . . . . .   5
      3.1.  Hypotheses and Goal . . . . . . . . . . . . . . . . . . .   5
@@ -40,7 +40,7 @@ Table of Contents
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
    7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-   Appendix A.  Basic componets and operation of Threshold Signing .  11
+   Appendix A.  Basic components and operation of Threshold Signing   11
    Appendix B.  Consensus algorithm  . . . . . . . . . . . . . . . .  13
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
 
@@ -53,7 +53,7 @@ Table of Contents
 
 
 
-Song                    Expires December 5, 2019                [Page 1]
+Song                    Expires December 13, 2019               [Page 1]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -100,7 +100,7 @@ Song                    Expires December 5, 2019                [Page 1]
 
 2.  Background and Motivation
 
-2.1.  Breif Review of IANA Root
+2.1.  Brief Review of IANA Root
 
    According to [SAC067] , the components of IANA Root involves four
    independent parties after IANA Transition: 1) the change requester,
@@ -109,7 +109,7 @@ Song                    Expires December 5, 2019                [Page 1]
 
 
 
-Song                    Expires December 5, 2019                [Page 2]
+Song                    Expires December 13, 2019               [Page 2]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -165,7 +165,7 @@ Song                    Expires December 5, 2019                [Page 2]
 
 
 
-Song                    Expires December 5, 2019                [Page 3]
+Song                    Expires December 13, 2019               [Page 3]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -181,8 +181,8 @@ Song                    Expires December 5, 2019                [Page 3]
 2.2.  Previous Proposals and discussions
 
    When it refers to decentralization technology, Blockchain comes to
-   people's mind which is a buzzle word recent years.  Based on
-   Blockchain, there are some naming service systems like ENS
+   people's mind which is a buzzword recent years.  Based on Blockchain,
+   there are some naming service systems like ENS
    (https://ens.domains/ ) in Ethereum network and Namecoin
    (https://namecoin.org/) in Bitcoin netowrk.  They introduce .eth and
    .bit respectively as special TLDs used only in their overlay network
@@ -221,7 +221,7 @@ Song                    Expires December 5, 2019                [Page 3]
 
 
 
-Song                    Expires December 5, 2019                [Page 4]
+Song                    Expires December 13, 2019               [Page 4]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -277,7 +277,7 @@ Song                    Expires December 5, 2019                [Page 4]
 
 
 
-Song                    Expires December 5, 2019                [Page 5]
+Song                    Expires December 13, 2019               [Page 5]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -333,7 +333,7 @@ Song                    Expires December 5, 2019                [Page 5]
 
 
 
-Song                    Expires December 5, 2019                [Page 6]
+Song                    Expires December 13, 2019               [Page 6]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -389,7 +389,7 @@ Song                    Expires December 5, 2019                [Page 6]
 
 
 
-Song                    Expires December 5, 2019                [Page 7]
+Song                    Expires December 13, 2019               [Page 7]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -445,7 +445,7 @@ Song                    Expires December 5, 2019                [Page 7]
 
 
 
-Song                    Expires December 5, 2019                [Page 8]
+Song                    Expires December 13, 2019               [Page 8]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -501,7 +501,7 @@ Song                    Expires December 5, 2019                [Page 8]
 
 
 
-Song                    Expires December 5, 2019                [Page 9]
+Song                    Expires December 13, 2019               [Page 9]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -557,7 +557,7 @@ Song                    Expires December 5, 2019                [Page 9]
 
 
 
-Song                    Expires December 5, 2019               [Page 10]
+Song                    Expires December 13, 2019              [Page 10]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -599,7 +599,7 @@ Song                    Expires December 5, 2019               [Page 10]
               2019, <http://yeti-dns.org/resource/2019-3-2/
               threshold-crypto-4-root-hsalgado.pdf>.
 
-Appendix A.  Basic componets and operation of Threshold Signing
+Appendix A.  Basic components and operation of Threshold Signing
 
    Before introducing new design of Yeti Root, it is necessary to
    briefly introduce the property of Threshold Signing with basic
@@ -613,7 +613,7 @@ Appendix A.  Basic componets and operation of Threshold Signing
 
 
 
-Song                    Expires December 5, 2019               [Page 11]
+Song                    Expires December 13, 2019              [Page 11]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -663,13 +663,13 @@ Song                    Expires December 5, 2019               [Page 11]
              signature shares are collected.  This operation is a key
              design introducing (n-t) redundancy which means if no more
              than (n-t+1) keys was compromised, the system will not be
-             taken down.  (To Be Confirmed and doble checked with crypto
-             scholar)
+             taken down.  (To Be Confirmed and double checked with
+             crypto expert)
 
 
 
 
-Song                    Expires December 5, 2019               [Page 12]
+Song                    Expires December 13, 2019              [Page 12]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -725,4 +725,4 @@ Author's Address
 
 
 
-Song                    Expires December 5, 2019               [Page 13]
+Song                    Expires December 13, 2019              [Page 13]

@@ -142,7 +142,7 @@
 
     <section title="Background and Motivation">
 
-    <section title="Breif Review of IANA Root" anchor="IANA_ROOT">
+    <section title="Brief Review of IANA Root" anchor="IANA_ROOT">
 
     <t>
       According to <xref target="SAC067"/> , the components of IANA Root 
@@ -217,7 +217,7 @@
     <section title="Previous Proposals and discussions" anchor="related-work">
       <t>
       When it refers to decentralization technology, Blockchain comes to 
-      people's mind which is a buzzle word recent years. Based on Blockchain, 
+      people's mind which is a buzzword recent years. Based on Blockchain, 
       there are some naming service systems like ENS (https://ens.domains/ ) 
       in Ethereum network and Namecoin (https://namecoin.org/) in Bitcoin netowrk. 
       They introduce .eth and .bit respectively as special TLDs used only in their 
@@ -605,7 +605,7 @@
      </reference>       
      </references>
 
-   <section title= "Basic componets and operation of Threshold Signing" anchor="threshold-signing">
+   <section title= "Basic components and operation of Threshold Signing" anchor="threshold-signing">
     <t>
       Before introducing new design of Yeti Root, it is necessary to briefly 
       introduce the property of Threshold Signing with basic primitives and 
@@ -662,7 +662,7 @@
         However if Aggregate_sigma failed and outputs not aggregated signature, it means 
         there is not enough (less then t) valid signature shares are collected. This operation 
         is a key design introducing (n-t) redundancy which means if no more than (n-t+1) 
-        keys was compromised, the system will not be taken down. (To Be Confirmed and doble checked with crypto scholar)</t>
+        keys was compromised, the system will not be taken down. (To Be Confirmed and double checked with crypto expert)</t>
       <t hangText="Verify:"> The Verify operation is the same as other signing and validating 
         process, by perform Verify(PK, msg, sigma_aggregated) outputs VALID if not error here.</t>
     </list>
