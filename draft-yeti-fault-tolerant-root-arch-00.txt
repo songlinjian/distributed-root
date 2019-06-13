@@ -2,7 +2,7 @@
 
 
 
-                                                                 L. Song
+Yeti Design Team                                                 L. Song
                                               Beijing Internet Institute
                                                            June 13, 2019
 
@@ -269,7 +269,7 @@ Song                    Expires December 15, 2019               [Page 4]
    o  New proposed scheme SHOULD be deployed on authority server only
       which means no change is required on recursive server.  Chile
       NIC's proposal as a kind of PKCS#11 provider is a good starting
-      pint.
+      point.
 
    o  New proposed scheme SHOULD not be introducing huge increase (>1200
       octets) on the size of DNS response.

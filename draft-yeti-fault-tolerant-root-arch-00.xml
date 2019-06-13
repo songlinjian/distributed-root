@@ -309,7 +309,7 @@
         <t>
           New proposed scheme SHOULD be deployed on authority server only 
           which means no change is required on recursive server. Chile NIC's 
-          proposal as a kind of PKCS#11 provider is a good starting pint.
+          proposal as a kind of PKCS#11 provider is a good starting point.
         </t>
         <t>
           New proposed scheme SHOULD not be introducing huge increase 
