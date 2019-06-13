@@ -110,8 +110,8 @@
       a single, globally Unique DNS Root <xref target="RFC2826"/> </t>
 
       <t>
-      Recent years as the rise of DNS privacy <xref target="RFC7626"/>, high resiliency and 
-      Internet policy concerns on Internet infrastructure, thoughts of introducing 
+      Recent years as the rise of concerns on DNS privacy <xref target="RFC7626"/>,
+      Internet governance and High availability of DNS, thoughts of introducing 
       fault-tolerance and decentralization technology into DNS are getting popular. Some 
       people suggest that "if we were designing a next-generation DNS using today's 
       technology, it should be possible to remove the technical requirement for a 

@@ -2,9 +2,9 @@
 
 
 
-Yeti Design Team                                                 L. Song
+                                                                 L. Song
                                               Beijing Internet Institute
-                                                           June 11, 2019
+                                                           June 13, 2019
 
 
          Fault-tolerant Root High Level Technical Architecture
@@ -53,7 +53,7 @@ Table of Contents
 
 
 
-Song                    Expires December 13, 2019               [Page 1]
+Song                    Expires December 15, 2019               [Page 1]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -72,8 +72,8 @@ Song                    Expires December 13, 2019               [Page 1]
    servers and their instances.  This centralized design fits the need
    to keep a single, globally Unique DNS Root [RFC2826]
 
-   Recent years as the rise of DNS privacy [RFC7626], high resiliency
-   and Internet policy concerns on Internet infrastructure, thoughts of
+   Recent years as the rise of concerns on DNS privacy [RFC7626],
+   Internet governance and High availability of DNS, thoughts of
    introducing fault-tolerance and decentralization technology into DNS
    are getting popular.  Some people suggest that "if we were designing
    a next-generation DNS using today's technology, it should be possible
@@ -109,7 +109,7 @@ Song                    Expires December 13, 2019               [Page 1]
 
 
 
-Song                    Expires December 13, 2019               [Page 2]
+Song                    Expires December 15, 2019               [Page 2]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -165,7 +165,7 @@ Song                    Expires December 13, 2019               [Page 2]
 
 
 
-Song                    Expires December 13, 2019               [Page 3]
+Song                    Expires December 15, 2019               [Page 3]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -221,7 +221,7 @@ Song                    Expires December 13, 2019               [Page 3]
 
 
 
-Song                    Expires December 13, 2019               [Page 4]
+Song                    Expires December 15, 2019               [Page 4]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -277,7 +277,7 @@ Song                    Expires December 13, 2019               [Page 4]
 
 
 
-Song                    Expires December 13, 2019               [Page 5]
+Song                    Expires December 15, 2019               [Page 5]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -333,7 +333,7 @@ Song                    Expires December 13, 2019               [Page 5]
 
 
 
-Song                    Expires December 13, 2019               [Page 6]
+Song                    Expires December 15, 2019               [Page 6]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -389,7 +389,7 @@ Song                    Expires December 13, 2019               [Page 6]
 
 
 
-Song                    Expires December 13, 2019               [Page 7]
+Song                    Expires December 15, 2019               [Page 7]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -445,7 +445,7 @@ Song                    Expires December 13, 2019               [Page 7]
 
 
 
-Song                    Expires December 13, 2019               [Page 8]
+Song                    Expires December 15, 2019               [Page 8]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -501,7 +501,7 @@ Song                    Expires December 13, 2019               [Page 8]
 
 
 
-Song                    Expires December 13, 2019               [Page 9]
+Song                    Expires December 15, 2019               [Page 9]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -557,7 +557,7 @@ Song                    Expires December 13, 2019               [Page 9]
 
 
 
-Song                    Expires December 13, 2019              [Page 10]
+Song                    Expires December 15, 2019              [Page 10]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -613,7 +613,7 @@ Appendix A.  Basic components and operation of Threshold Signing
 
 
 
-Song                    Expires December 13, 2019              [Page 11]
+Song                    Expires December 15, 2019              [Page 11]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -669,7 +669,7 @@ Song                    Expires December 13, 2019              [Page 11]
 
 
 
-Song                    Expires December 13, 2019              [Page 12]
+Song                    Expires December 15, 2019              [Page 12]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -725,4 +725,4 @@ Author's Address
 
 
 
-Song                    Expires December 13, 2019              [Page 13]
+Song                    Expires December 15, 2019              [Page 13]
