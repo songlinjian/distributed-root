@@ -3,8 +3,9 @@
 
 
 Yeti Design Team                                                 L. Song
+                                                                   Z. Li
                                               Beijing Internet Institute
-                                                           June 13, 2019
+                                                           June 20, 2019
 
 
          Fault-tolerant Root High Level Technical Architecture
@@ -25,7 +26,7 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   1
    2.  Background and Motivation . . . . . . . . . . . . . . . . . .   2
-     2.1.  Brief Review of IANA Root . . . . . . . . . . . . . . . .   2
+     2.1.  Brief Review of IANA Root . . . . . . . . . . . . . . . .   3
      2.2.  Previous Proposals and discussions  . . . . . . . . . . .   4
    3.  Framework of Fault-tolerant Root  . . . . . . . . . . . . . .   5
      3.1.  Hypotheses and Goal . . . . . . . . . . . . . . . . . . .   5
@@ -40,9 +41,9 @@ Table of Contents
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
    7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-   Appendix A.  Basic components and operation of Threshold Signing   11
-   Appendix B.  Consensus algorithm  . . . . . . . . . . . . . . . .  13
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
+   Appendix A.  Basic components and operation of Threshold Signing   12
+   Appendix B.  Distributed Consensus algorithm  . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
 
 1.  Introduction
 
@@ -52,8 +53,7 @@ Table of Contents
 
 
 
-
-Song                    Expires December 15, 2019               [Page 1]
+Song & Li               Expires December 22, 2019               [Page 1]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -75,14 +75,17 @@ Song                    Expires December 15, 2019               [Page 1]
    Recent years as the rise of concerns on DNS privacy [RFC7626],
    Internet governance and High availability of DNS, thoughts of
    introducing fault-tolerance and decentralization technology into DNS
-   are getting popular.  Some people suggest that "if we were designing
-   a next-generation DNS using today's technology, it should be possible
-   to remove the technical requirement for a central authority over the
-   root" [RFC8324].  Yeti DNS Testbed [RFC8483] proposed and built a
-   model introducing three ZSK signers and root zone distributors.
+   are getting popular.  The idea of sharing control over the root was
+   firstly discussed and proposed in ICANN Identifier Technology
+   Innovation Report for ICANN's strategic planning in 2014 [ITI2014].
+   There were some discussion of a "masterless" approach toward a
+   solution.  [RFC8324] suggests it should be possible to remove the
+   technical requirement for a central authority over the root for next-
+   generation DNS." . Yeti DNS Testbed [RFC8483] proposed and built a
+   root system introducing three ZSK signers and root zone distributors.
    Yeti's model shows a form of root "democracy" governance but it is
-   not fault-tolerant and scalable enough technically speaking [FDMA].
-   It gives us motivation to upgrade Yeti Root to "higher" level by
+   not fault-tolerant and can not scale technically speaking [FDMA].  It
+   gives us motivation to upgrade Yeti Root to "higher" level by
    introducing the properties of decentralization and fault-tolerance.
 
    This document describes the proposed architecture of Fault-tolerant
@@ -100,20 +103,23 @@ Song                    Expires December 15, 2019               [Page 1]
 
 2.  Background and Motivation
 
+
+
+
+
+
+
+Song & Li               Expires December 22, 2019               [Page 2]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
 2.1.  Brief Review of IANA Root
 
    According to [SAC067] , the components of IANA Root involves four
    independent parties after IANA Transition: 1) the change requester,
    usually the manager(s) or administrator(s) of the TLD; 2) ICANN/PTI,
    as the IANA Functions Operator;3) VeriSign, as the Root Zone
-
-
-
-Song                    Expires December 15, 2019               [Page 2]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    Maintainer(RZM); and 4) the Root Server Operators.  Their
    relationship and data flow among them are shown in figure 1 below.
 
@@ -156,20 +162,19 @@ Song                    Expires December 15, 2019               [Page 2]
    publication, and use for signing in cooperation with the Internet
    community according to [DNSSEC-Root].
 
+
+
+
+Song & Li               Expires December 22, 2019               [Page 3]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    VeriSign as the Root zone Maintainer(RZM) is responsible for
    incorporating DNSSEC-related changes into the root zone file, signing
    the file with the ZSK, and distribute the signed root zone file to
    the root servers.  It is also referred as to Distribution Master
    (DM).  RZM and DM are both used in following sessions as the role of
-
-
-
-
-Song                    Expires December 15, 2019               [Page 3]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    signing and publishing root zone.  Note that there is an exchange of
    ZSK and Signed DNSKEY set between IANA operator and RZM.
 
@@ -192,17 +197,20 @@ Song                    Expires December 15, 2019               [Page 3]
 
    In Yeti DNS Project, from the beginning, we keep boundaries for One
    Unique Internet Identifier and not amending the IANA name space.
-   However, the Blockchain-based DNS does not fit DNS in operation
-   network.  They have different name space and use different resolving
-   protocols.  As introduced in Figure 1, the Root system is decoupled
-   into three functions: editing, signing and publication.  It is
-   possible to keep the root zone intact and make changes to signing and
-   publication functions to meet our requirement.
+   However, most Blockchain-based DNS does not fit DNS in operation
+   network in that they have different name space (with their own TLD)
+   and use different protocols.  Note that it is technical possible that
+   Blockchain-based DNS can be built to serve the IANA name space with
+   newly defined protocol.  But it is out of scope of this document.
 
-   There are some approaches introduce alternative method to access the
-   unique name space.  Loopback Root [RFC8483]is one alternative root
-   zone publication approach in which the signed root zone is replicated
-   in resolver.  Changes are made only in publication function.
+   As introduced in Figure 1, the Root system is decoupled into three
+   functions: editing, signing and publication.  It is possible to keep
+   the root zone intact and make changes to signing and publication
+   functions to meet our requirement.  There are some approaches
+   introduce alternative method to access the unique name space.
+   Loopback Root [RFC8483]is one alternative root zone publication
+   approach in which the signed root zone is replicated in resolver.
+   Changes are made only in publication function.
 
    Yeti DNS [RFC8483] is one example made changes in both signing and
    publication functions.  Yeti root zone is signed by three DMs and
@@ -211,6 +219,13 @@ Song                    Expires December 15, 2019               [Page 3]
    current version of Multi-DM does not scale due to increased DNS
    response by introducing multiple ZSKs.
 
+
+
+Song & Li               Expires December 22, 2019               [Page 4]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    On Root signing function, John Ihren and Bill manning [draft-ihren-
    dnsext-threshold-validation] once proposed a mechanism called
    threshold validation to improved trust and redundancy for DNSSEC
@@ -218,14 +233,6 @@ Song                    Expires December 15, 2019               [Page 3]
    signed by multiple trust entities.  If the number of successful
    validation reaches a threshold, then the outcome of multiple
    validations as a whole is VALID.  Similar with Yeti model, it does
-
-
-
-Song                    Expires December 15, 2019               [Page 4]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    not scale given the limitation of DNS packet size (contain multiple
    KEY and signature).  It also require changes on every validating
    resolver which make it a task impossible.
@@ -266,6 +273,15 @@ Song                    Expires December 15, 2019               [Page 4]
    o  To provide consistency check on to-be published root zone in case
       of date inconsistency in a distributed manner.
 
+
+
+
+
+Song & Li               Expires December 22, 2019               [Page 5]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    o  New proposed scheme SHOULD be deployed on authority server only
       which means no change is required on recursive server.  Chile
       NIC's proposal as a kind of PKCS#11 provider is a good starting
@@ -273,14 +289,6 @@ Song                    Expires December 15, 2019               [Page 4]
 
    o  New proposed scheme SHOULD not be introducing huge increase (>1200
       octets) on the size of DNS response.
-
-
-
-
-Song                    Expires December 15, 2019               [Page 5]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
 
 3.2.  Roles and Responsibilities
 
@@ -322,6 +330,14 @@ Song                    Expires December 15, 2019               [Page 5]
    is that in figure 1 TLD operators can push zone change request and DS
    to ICANN/PTI.  But in Yeti, it is to pull the data and generate DS
    record locally.  From the TLD data point of view, they are mostly
+
+
+
+Song & Li               Expires December 22, 2019               [Page 6]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
    identical except some NS records are present in TLD zone but not in
    root zone.
 
@@ -330,14 +346,6 @@ Song                    Expires December 15, 2019               [Page 5]
    network.  The Yeti DM network take the role of signing and publishing
    Root zone acting as one DM with the assistance of two key components
    : threshold signing and consensus algorithm.  It is a desirable
-
-
-
-Song                    Expires December 15, 2019               [Page 6]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    capability that failure on small parts of Yeti DM network (a
    threshold number of DMs) will not be able to take down the whole
    system.  Note that the numbers of DM and threshold are testing
@@ -365,13 +373,13 @@ Song                    Expires December 15, 2019               [Page 6]
    Root zone file to Yeti root servers.
 
    Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act
-   as an "One DM".  That means in each step, each Yeti DM should
-   broadcast the values or root zone, signature, Signed root zone to
-   others until final consensus on that values are reached.  In
-   Appendix B, there is a introduction of consensus algorithm which will
-   help readers to understand the basic property and interaction between
-   Yeti DMs.  Note that we will not dive into specific consensus
-   algorithm in this draft.
+   as "One DM".  That means in each step, each Yeti DM should broadcast
+   the values or root zone, signature, Signed root zone to others until
+   final consensus on those values are reached.  In Appendix B, there is
+   a introduction of consensus algorithm which will help readers to
+   understand the basic property and interaction between Yeti DMs.  Note
+   that we will not dive into specific consensus algorithm in this
+   draft.
 
 
 
@@ -381,15 +389,7 @@ Song                    Expires December 15, 2019               [Page 6]
 
 
 
-
-
-
-
-
-
-
-
-Song                    Expires December 15, 2019               [Page 7]
+Song & Li               Expires December 22, 2019               [Page 7]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -445,7 +445,7 @@ Song                    Expires December 15, 2019               [Page 7]
 
 
 
-Song                    Expires December 15, 2019               [Page 8]
+Song & Li               Expires December 22, 2019               [Page 8]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -501,7 +501,7 @@ Song                    Expires December 15, 2019               [Page 8]
 
 
 
-Song                    Expires December 15, 2019               [Page 9]
+Song & Li               Expires December 22, 2019               [Page 9]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -557,7 +557,7 @@ Song                    Expires December 15, 2019               [Page 9]
 
 
 
-Song                    Expires December 15, 2019              [Page 10]
+Song & Li               Expires December 22, 2019              [Page 10]
 
           Fault-tolerant Root High Level Technical ArchitectureJune 2019
 
@@ -571,6 +571,15 @@ Song                    Expires December 15, 2019              [Page 10]
               Boneh, D., Gorbunov, S., Wee, H., and Z. Zhang, "BLS
               Signature Scheme", draft-boneh-bls-signature-00 (work in
               progress), February 2019.
+
+   [I-D.ihren-dnsext-threshold-validation]
+              Ihren, J., "Threshold Validation: A Mechanism for Improved
+              Trust and Redundancy for DNSSEC Keys", draft-ihren-dnsext-
+              threshold-validation-01 (work in progress), July 2004.
+
+   [ITI2014]  "Identifier Technology Innovation Report", May 2014,
+              <https://www.icann.org/en/system/files/files/
+              iti-report-15may14-en.pdf>.
 
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
@@ -599,6 +608,16 @@ Song                    Expires December 15, 2019              [Page 10]
               2019, <http://yeti-dns.org/resource/2019-3-2/
               threshold-crypto-4-root-hsalgado.pdf>.
 
+
+
+
+
+
+Song & Li               Expires December 22, 2019              [Page 11]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
 Appendix A.  Basic components and operation of Threshold Signing
 
    Before introducing new design of Yeti Root, it is necessary to
@@ -610,14 +629,6 @@ Appendix A.  Basic components and operation of Threshold Signing
 
    o  The first component is a key generation process with secret
       sharing scheme which generates multiple secret key shares from the
-
-
-
-Song                    Expires December 15, 2019              [Page 11]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
       secret key.  Secret sharing system is also called a (t,n)-
       threshold scheme due to the property that a number (number >= t)
       of secret shares can reconstruct the secret to be used to sign.
@@ -641,7 +652,7 @@ Song                    Expires December 15, 2019              [Page 11]
       scheme)
 
    Based on the components of threshold signing, there are several
-   operations provided to fulfill the threshold signing process
+   operations provided to fulfill the threshold signing process.
 
    KeyGen:   Given the key_pair (public key and secret key), the number
              of authorities (n) and the threshold (t), KeyGen operation
@@ -653,6 +664,15 @@ Song                    Expires December 15, 2019              [Page 11]
              performing Sign(sk, msg) which outputs sigma.  Note that a
              group of secret key share (sks_group) can generate a group
              of signatures share (sigma_group)
+
+
+
+
+
+Song & Li               Expires December 22, 2019              [Page 12]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
 
    Aggregate_sigma:  Given any t out of n signatures share signed by
              secret key shares, an aggregated signature can be generated
@@ -666,14 +686,6 @@ Song                    Expires December 15, 2019              [Page 11]
              taken down.  (To Be Confirmed and double checked with
              crypto expert)
 
-
-
-
-Song                    Expires December 15, 2019              [Page 12]
-
-          Fault-tolerant Root High Level Technical ArchitectureJune 2019
-
-
    Verify:   The Verify operation is the same as other signing and
              validating process, by perform Verify(PK, msg,
              sigma_aggregated) outputs VALID if not error here.
@@ -681,21 +693,71 @@ Song                    Expires December 15, 2019              [Page 12]
    Note that there is a still a centralized dealer to generate key and
    key shares and distributed to n players but just in the beginning.
    The threshold signing described above require not dealer in each
-   update of msg.  In the context of root, after key generation process
-   (like a Key ceremony), all process of root zone signing and
+   update of message.  In the context of root, after key generation
+   process (like a Key ceremony), all process of root zone signing and
    publication can be done in a distributed and automatic manner.
 
-Appendix B.  Consensus algorithm
+Appendix B.  Distributed Consensus algorithm
 
-   It is quoted that consensus is a fundamental problem in fault-
-   tolerant distributed systems.  Consensus involves multiple servers
-   agreeing on values.  Once they reach a decision on a value, that
-   decision is final.  In this section, there is a brief introduction of
-   Raft consensus algorithm (https://raft.github.io/) as a background.
+   Consensus is a fundamental problem in fault-tolerant distributed
+   systems.  Consensus involves multiple servers agreeing on values.
+   Once they reach a decision on a value, that decision is final.
 
-   TBD
+   Let's suppose a node as a database server that stores a value.  In
+   one node system it is easy to achieve agreement and consensus on that
+   value if a client sends this value to the server.  However, if we
+   have multiple nodes we need a consensus algorithm running on each
+   node to achieve the agreement on that value in case of failures in
+   the minority of nodes.
 
-Author's Address
+   In this section Raft is briefly introduced in that it is equivalent
+   to Paxos in fault-tolerance and performance, and easy to be
+   understood.  In a high level overview, Raft works with two
+   components&#65306;
+
+   Leader Election:  The Raft algorithm begin with a Leader election
+             process.  A node can be in 1 of 3 state: follower,
+             candidate and leader.  There is a self-elected and votes
+             protocol in which a node can transfer its state from
+             follower to candidate, and then leader if it receives
+             majority of votes.  Once a leader node is elected , all
+             changes to the system will go through the leader.  It takes
+
+
+
+Song & Li               Expires December 22, 2019              [Page 13]
+
+          Fault-tolerant Root High Level Technical ArchitectureJune 2019
+
+
+             responsibility to receive the change (of the value) and
+             synchronize it to other nodes in this system which is done
+             in Log Replication.
+
+   Log Replication:  When the leader node receive changes of the value
+             (or values), each change is added as an entry in the node's
+             log as a uncommitted change.  That uncommitted change will
+             be written to the value only after agreement is achieved on
+             this value among all nodes.  It first replicates it to all
+             follower nodes and receive confirmation from them.  If
+             majority of them confirm the value, then the leader node
+             will send a confirmation message to all follower nodes
+             again as a final decision on this value.
+
+   Note that to better understand the two component of Raft, there is a
+   vivid visualization of Raft in http://thesecretlivesofdata.com/raft/.
+
+   In the case of Yeti Fault-tolerant Root, the distributed consensus is
+   vital.  According to Section 3.3 each DM works as a independent node
+   in this distributed system.  They have a lot of values that needs to
+   be agreed among all DMs.  The values includes record changes from
+   TLD, public key of each DM, signature signed by each DM, aggragated
+   public key and signature.  There is no single external client/source
+   to provide changes of value to be agreed on.  There are many original
+   client/source of that values, like TLD servers and all DMs who
+   provide changes of their key and signature of particular RRset.
+
+Authors' Addresses
 
    Linjian Song
    Beijing Internet Institute
@@ -706,23 +768,17 @@ Author's Address
    Email: songlinjian@gmail.com
 
 
+   Zhen Li
+   Beijing Internet Institute
+   2nd Floor, Building 5, No.58 Jing Hai Wu Lu, BDA
+   Beijing  100176
+   P. R. China
+
+   Email: zli@biigroup.com
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Song                    Expires December 15, 2019              [Page 13]
+Song & Li               Expires December 22, 2019              [Page 14]

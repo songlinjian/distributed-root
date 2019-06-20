@@ -13,8 +13,8 @@
 <!ENTITY RFC7626 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7626.xml">
 <!ENTITY I-D.boneh-bls-signature SYSTEM
     "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-boneh-bls-signature-00.xml">
-<!--  <!ENTITY I-D.ihren-dnsext-threshold-validation SYSTEM
-    "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ihren-dnsext-threshold-validation-01.xml"> -->
+<!ENTITY I-D.ihren-dnsext-threshold-validation SYSTEM
+    "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ihren-dnsext-threshold-validation.xml">
 
 ]>
 <!--<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>-->
@@ -62,6 +62,20 @@
           <country>P. R. China</country>
         </postal>
         <email>songlinjian@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Zhen Li" initials="Z." surname="Li">
+      <organization>Beijing Internet Institute</organization>
+      <address>
+        <postal>
+          <street>2nd Floor, Building 5, No.58 Jing Hai Wu Lu, BDA</street>
+          <city>Beijing</city>
+          <region></region>
+          <code>100176</code>
+          <country>P. R. China</country>
+        </postal>
+        <email>zli@biigroup.com</email>
       </address>
     </author>
     
@@ -112,16 +126,18 @@
       <t>
       Recent years as the rise of concerns on DNS privacy <xref target="RFC7626"/>,
       Internet governance and High availability of DNS, thoughts of introducing 
-      fault-tolerance and decentralization technology into DNS are getting popular. Some 
-      people suggest that "if we were designing a next-generation DNS using today's 
-      technology, it should be possible to remove the technical requirement for a 
-      central authority over the root" <xref target="RFC8324"/>. Yeti DNS Testbed 
-      <xref target="RFC8483"/> proposed and built a model introducing three ZSK 
-      signers and root zone distributors. Yeti's model shows a form of root 
-      "democracy" governance but it is not fault-tolerant and scalable enough 
-      technically speaking <xref target="FDMA"/>. It gives us motivation to 
-      upgrade Yeti Root to "higher" level by introducing the properties of 
-      decentralization and fault-tolerance.
+      fault-tolerance and decentralization technology into DNS are getting popular. 
+      The idea of sharing control over the root was firstly discussed and proposed 
+      in ICANN Identifier Technology Innovation Report for ICANN’s strategic planning 
+      in 2014 <xref target="ITI2014"/>. There were some discussion of a "masterless" approach 
+      toward a solution. <xref target="RFC8324"/> suggests it should be possible 
+      to remove the technical requirement for a central authority over the root 
+      for next-generation DNS." . Yeti DNS Testbed <xref target="RFC8483"/> proposed 
+      and built a root system introducing three ZSK signers and root zone distributors. 
+      Yeti's model shows a form of root "democracy" governance but it is not 
+      fault-tolerant and can not scale technically speaking <xref target="FDMA"/>. 
+      It gives us motivation to upgrade Yeti Root to "higher" level by introducing 
+      the properties of decentralization and fault-tolerance.
       </t>
 
       <t>
@@ -228,17 +244,19 @@
       <t>
         In Yeti DNS Project, from the beginning, we keep boundaries for One 
         Unique Internet Identifier and not amending the IANA name space. However, 
-        the Blockchain-based DNS does not fit DNS in operation network. 
-        They have different name space and use different resolving protocols. 
-        As introduced in <xref target="components"/>, the Root system is decoupled 
-        into three functions: editing, signing and publication. It is possible to keep 
-        the root zone intact and make changes to signing and publication functions 
-        to meet our requirement. 
+        most Blockchain-based DNS does not fit DNS in operation network in that they 
+        have different name space (with their own TLD) and use different protocols. 
+        Note that it is technical possible that Blockchain-based DNS can be built 
+        to serve the IANA name space with newly defined protocol. But it is out of 
+        scope of this document. 
       </t>
 
       <t>
-        There are some approaches introduce alternative method to access the unique 
-        name space. Loopback Root <xref target="RFC8483"/>is one 
+        As introduced in <xref target="components"/>, the Root system is decoupled 
+        into three functions: editing, signing and publication. It is possible to keep 
+        the root zone intact and make changes to signing and publication functions 
+        to meet our requirement. There are some approaches introduce alternative 
+        method to access the unique name space. Loopback Root <xref target="RFC8483"/>is one 
         alternative root zone publication approach in which the signed root zone 
         is replicated in resolver. Changes are made only in publication function.</t> 
       
@@ -252,7 +270,9 @@
        </t>
 
        <t>
-        On Root signing function, John Ihren and Bill manning [draft-ihren-dnsext-threshold-validation] once proposed a mechanism called threshold validation to improved trust and redundancy 
+        On Root signing function, John Ihren and Bill manning 
+        <xref target="I-D.ihren-dnsext-threshold-validation"/> 
+        once proposed a mechanism called threshold validation to improved trust and redundancy 
         for DNSSEC Keys. Basically it require resolvers to validate multiple 
         signatures signed by multiple trust entities. If the number of successful 
         validation reaches a threshold, then the outcome of multiple validations 
@@ -390,7 +410,7 @@
       </t>
 
       </section>
-      <section title= "The Data Flow and Process">
+      <section title= "The Data Flow and Process" anchor="Data_flow_process">
 
        <t>
       In Figure 3, there is a chart of data flow and process as a routine 
@@ -407,15 +427,15 @@
 
        <t>
       Note that steps 1), 2) and 3) require Yeti DMs to coordinate and act as 
-      an "One DM". That means in each step, each Yeti DM should broadcast 
+      "One DM". That means in each step, each Yeti DM should broadcast 
       the values or root zone, signature, Signed root zone to others until 
-      final consensus on that values are reached. In <xref target="Consensus"/>, 
+      final consensus on those values are reached. In <xref target="Consensus"/>, 
       there is a introduction of consensus algorithm which will help readers to
       understand the basic property and interaction between Yeti DMs. Note that 
       we will not dive into specific consensus algorithm in this draft. 
     </t>
 
-      <figure anchor="Data_flow_process" title="The Data Flow and Process">
+      <figure anchor="Figure_Data_flow_process" title="The Data Flow and Process">
         <artwork>
           <![CDATA[
                            +
@@ -570,7 +590,8 @@
   <back>
 
     <references title="References">
-      &RFC8483;&RFC2826;&RFC8324;&RFC7626;&I-D.boneh-bls-signature;<!-- &I-D.ihren-dnsext-threshold-validation; -->
+      &RFC8483;&RFC2826;&RFC8324;&RFC7626;&I-D.boneh-bls-signature; 
+      &I-D.ihren-dnsext-threshold-validation;
      <reference anchor="FDMA" target="https://yeti-dns.org/yeti/blog/2018/08/13/fault-tolerant-distribution-master-architecture.html">
             <front>
                 <title>Fault-tolerant Distribution Master Architecture</title>
@@ -602,7 +623,15 @@
                 <author fullname="Hugo Salgado" initials="H." surname="Salgado"/>
                 <date year="2019" month="March" day="2"/>
             </front>
-     </reference>       
+     </reference>
+     <reference anchor="ITI2014"
+        target="https://www.icann.org/en/system/files/files/iti-report-15may14-en.pdf">
+        <front>
+          <title>Identifier Technology Innovation Report</title>
+          <author/>
+          <date day="15" month="May" year="2014"/>
+        </front>
+      </reference>       
      </references>
 
    <section title= "Basic components and operation of Threshold Signing" anchor="threshold-signing">
@@ -641,7 +670,7 @@
 
     <t>
       Based on the components of threshold signing, there are several operations 
-      provided to fulfill the threshold signing process
+      provided to fulfill the threshold signing process.
     </t>
 
     <t>
@@ -671,24 +700,66 @@
   <t>
     Note that there is a still a centralized dealer to generate key and key shares and 
     distributed to n players but just in the beginning. The threshold signing described 
-    above require not dealer in each update of msg. In the context of root, after key 
+    above require not dealer in each update of message. In the context of root, after key 
     generation process (like a Key ceremony), all process of root zone signing and 
     publication can be done in a distributed and automatic manner.  
   </t>
 
    </section>
-    <section title= "Consensus algorithm" anchor="Consensus">
+    <section title= "Distributed Consensus algorithm" anchor="Consensus">
 
       <t>
-        It is quoted that consensus is a fundamental problem in fault-tolerant 
-        distributed systems. Consensus involves multiple servers agreeing on values. 
-        Once they reach a decision on a value, that decision is final. In this 
-        section, there is a brief introduction of Raft consensus algorithm 
-        (https://raft.github.io/) as a background.
-      </t>
+        Consensus is a fundamental problem in fault-tolerant distributed systems. 
+        Consensus involves multiple servers agreeing on values. Once they reach a 
+        decision on a value, that decision is final. </t>
 
-    <t>
-      TBD
+     <t>
+      Let's suppose a node as a database server that stores a value. In one node system 
+      it is easy to achieve agreement and consensus on that value if a client sends this 
+      value to the server. However, if we have multiple nodes we need a consensus algorithm 
+      running on each node to achieve the agreement on that value in case of failures in 
+      the minority of nodes.   
+    </t>
+
+    <t>In this section Raft is briefly introduced in that it is equivalent to Paxos 
+      in fault-tolerance and performance, and easy to be understood. In a high level 
+      overview, Raft works with two components：
+    </t>
+
+    <t>    
+      <list style="hanging" hangIndent="10">
+        <t hangText="Leader Election:"> The Raft algorithm begin with a Leader election 
+          process. A node can be in 1 of 3 state: follower, candidate and leader. 
+          There is a self-elected and votes protocol in which a node can transfer its 
+          state from follower to candidate, and then leader if it receives majority of 
+          votes. Once a leader node is elected , all changes to the system will go 
+          through the leader. It takes responsibility to receive the change (of the value) 
+          and synchronize it to other nodes in this system which is done in Log Replication. 
+        </t>
+
+        <t hangText="Log Replication:"> When the leader node receive changes of the value 
+          (or values), each change is added as an entry in the node's log as a uncommitted 
+          change. That uncommitted change will be written to the value only after agreement 
+          is achieved on this value among all nodes. It first replicates it to all 
+          follower nodes and receive confirmation from them. If majority of them confirm the 
+          value, then the leader node will send a confirmation message to all follower nodes 
+          again as a final decision on this value. 
+        </t>
+        </list>
+    </t>
+
+    <t>Note that to better understand the two component of Raft, there is a vivid visualization 
+      of Raft in http://thesecretlivesofdata.com/raft/. </t>
+
+    <t>In the case of Yeti Fault-tolerant Root, the distributed consensus 
+      is vital. According to <xref target="Data_flow_process"/> each DM works 
+      as a independent node in this distributed system. They have a lot of values 
+      that needs to be agreed among all DMs. The values includes record changes 
+      from TLD, public key of each DM, signature signed by each DM, aggragated 
+      public key and signature. There is no single external client/source to 
+      provide changes of value to be agreed on. There are many original client/source 
+      of that values, like TLD servers and all DMs who provide changes of their key 
+      and signature of particular RRset. 
     </t>
    </section>
   </back>
